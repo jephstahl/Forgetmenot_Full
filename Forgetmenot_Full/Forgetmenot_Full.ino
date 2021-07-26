@@ -8,8 +8,10 @@ byte answerState = INERT;
 byte centerFace = 0;
 
 //PACKET ARRANGEMENT: puzzleType, puzzlePalette, puzzleDifficulty, isAnswer, showTime, darkTime
-byte petalPacketStandard[6] = {0, 0, 0, 0, 100, 100};
-byte petalPacketPrime[6] = {0, 0, 0, 1, 100, 100};
+byte showTime = 500;
+byte darkTime = 200;
+byte petalPacketStandard[6] = {0, 0, 0, 0, showTime, darkTime};
+byte petalPacketPrime[6] = {0, 0, 0, 1, showTime, darkTime};
 
 byte currentPuzzleLevel = 0;
 Timer puzzleTimer;
@@ -32,6 +34,7 @@ Timer puzzleTimer;
 
 Color pinkColors[6] = {PINK1, PINK2, PINK3, PINK4, PINK5, PINK6};
 Color blueColors[6] = {BLUE1, BLUE2, BLUE3, BLUE4, BLUE5, BLUE6};
+Color startColors[4] = {RED, YELLOW, GREEN, BLUE};
 
 bool canBloom = false;
 Timer bloomTimer;
@@ -137,6 +140,10 @@ void centerLoop() {
     //I guess here we just listen for RIGHT/WRONG signals?
     //and I guess eventually ERROR HANDLING
 
+    if (buttonSingleClicked()) {//Use a life and replay puzzle TODO
+      
+    }
+
     if (buttonDoubleClicked()) {//here we reveal the correct answer and move forward
       answerState = CORRECT;
       gameState = CENTER;
@@ -196,7 +203,9 @@ void pieceLoop() {
     if (buttonSingleClicked()) {
       //is this right or wrong?
       //TODO: actually have an answer to this. For now... we'll just do a 50/50 split
-      bool isCorrect = random(1);
+      //bool isCorrect = random(1);
+      bool isCorrect = (puzzleInfo[3]!=0);
+
       if (isCorrect) {
         answerState = CORRECT;
       } else {
@@ -211,11 +220,15 @@ void pieceLoop() {
 byte determineStages(byte puzzType, byte puzzDiff, byte amAnswer, byte stage) {
   if (stage == 1) {
     //TODO: more complicated build here
-    return (random(5));
+    return (random(3)); //return (random(5));
   } else {//only change answer if amAnswer
     if (amAnswer) {
       //TODO: need to consider difficulty level here
-      return ((stageOneData + random(4) + 1) % 6);
+      //return ((stageOneData + random(2) + 1) % 4); // moded for 4 color puzzle
+      do {
+        stageTwoData = random(3);
+      } while( stageTwoData == stageOneData);
+      return (stageTwoData);
     } else {
       return (stageOneData);
     }
@@ -325,12 +338,12 @@ void pieceDisplay() {
   } else {//show the puzzle
     if (puzzleTimer.isExpired()) {//show the last stage of the puzzle (forever)
       //TODO: take into account color palette, defaulting to pink for now
-      setColor(pinkColors[stageOneData]);
+      setColor(startColors[stageOneData]); //setColor(pinkColors[stageOneData]);
     } else if (puzzleTimer.getRemaining() <= (puzzleInfo[5] * 10)) {//show darkness with a little flower bit
       setColor(OFF);
       setColorOnFace(dim(GREEN, 100), centerFace);
     } else {//show the first stage of the puzzle
-      setColor(pinkColors[stageTwoData]);
+      setColor(startColors[stageTwoData]);//setColor(pinkColors[stageTwoData]);
     }
   }
 
