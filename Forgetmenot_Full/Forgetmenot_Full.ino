@@ -147,6 +147,7 @@ void centerLoop() {
 
     if (buttonDoubleClicked()) {//here we reveal the correct answer and move forward
       answerState = CORRECT;
+      answerTimer.set(2000);   //set answer timer for display
       gameState = CENTER;
     }
 
@@ -245,6 +246,7 @@ void answerLoop() {
         byte neighborAnswer = getAnswerState(getLastValueReceivedOnFace(f));
         if (neighborAnswer == CORRECT || neighborAnswer == WRONG) {
           answerState = neighborAnswer;
+          answerTimer.set(2000);
 
           if (gameState == PLAYING_PIECE) {
             gameState = WAITING;
@@ -317,8 +319,16 @@ void centerDisplay() {
   //so we need some temp graphics
   switch (gameState) {
     case CENTER:
-      setColor(YELLOW);
-      setColorOnFace(WHITE, random(5));
+      if (!answerTimer.isExpired()) {
+        if (answerState == CORRECT) {
+          setColor(GREEN);
+        } else if (answerState == WRONG) {
+          setColor(RED);
+        }      
+      } else {
+        setColor(YELLOW);
+        setColorOnFace(WHITE, random(5));
+      }
       break;
     case SENDING:
       setColor(dim(YELLOW, 100));
