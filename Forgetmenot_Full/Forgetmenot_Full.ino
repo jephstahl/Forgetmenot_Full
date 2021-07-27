@@ -15,6 +15,7 @@ byte petalPacketPrime[6] = {0, 0, 0, 1, showTime, darkTime};
 
 byte currentPuzzleLevel = 0;
 Timer puzzleTimer;
+Timer answerTimer;
 
 //byte petalHues[4] = {131, 159, 180, 223};//light blue, dark blue, violet, pink
 
@@ -211,6 +212,7 @@ void pieceLoop() {
       } else {
         answerState = WRONG;
       }
+      answerTimer.set(2000);   //set answer timer for display
       gameState = WAITING;
     }
   }
@@ -333,8 +335,21 @@ void pieceDisplay() {
 
   //TODO: break this into puzzle type specific displays
   if (gameState == WAITING) {//just waiting
-    setColor(OFF);
-    setColorOnFace(GREEN, centerFace);
+    
+    //setColor(OFF);
+    //setColorOnFace(GREEN, centerFace);
+    if (!answerTimer.isExpired()){
+          if (answerState == CORRECT) {
+             setColor(GREEN);
+          } else if (answerState == WRONG) {
+             setColor(RED);
+          }
+    } else {
+      setColor(OFF);
+      setColorOnFace(GREEN, centerFace);
+    }
+    
+    
   } else {//show the puzzle
     if (puzzleTimer.isExpired()) {//show the last stage of the puzzle (forever)
       //TODO: take into account color palette, defaulting to pink for now
