@@ -35,13 +35,35 @@ Timer answerTimer;
 
 Color pinkColors[6] = {PINK1, PINK2, PINK3, PINK4, PINK5, PINK6};
 Color blueColors[6] = {BLUE1, BLUE2, BLUE3, BLUE4, BLUE5, BLUE6};
-Color startColors[4] = {RED, YELLOW, GREEN, BLUE};
+Color primaryColors[4] = {RED, YELLOW, GREEN, BLUE};
 
 bool canBloom = false;
 Timer bloomTimer;
 #define BLOOM_TIME 1000
 #define GREEN_HUE 77
 #define YELLOW_HUE 42
+
+
+//Puzzle levels
+// byte puzzleInfo[6] = {puzzleType, puzzlePalette, puzzleDifficulty, isAnswer, showTime, darkTime};
+
+// colorPetals:  color changes on one of the petals
+// locationPetals:  one side on each petal is lit, and changes position
+// animationPetlas: a basic animation clockwise or counterclockwise on each petal... one changes
+// globalPetals: a
+enum puzzleType {colorPetals, locationPetals, animationPetals, globalPetals, 
+                  flashPetals, changeingPetals, animationPetals2, numPetals};
+enum puzzlePallette  {primary, pink, blue};
+
+// beginner: pick from two colours
+// easy: pick from three colours
+// medium: pick from four colours
+// hard: pick from five colours
+// extrahard: pick from 6 colours --- probably not
+enum puzzleDifficulty {beginner, easy, medium, hard, extrahard};
+
+
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -363,12 +385,11 @@ void pieceDisplay() {
   } else {//show the puzzle
     if (puzzleTimer.isExpired()) {//show the last stage of the puzzle (forever)
       //TODO: take into account color palette, defaulting to pink for now
-      setColor(startColors[stageOneData]); //setColor(pinkColors[stageOneData]);
+      setColor(primaryColors[stageOneData]); //setColor(pinkColors[stageOneData]);
     } else if (puzzleTimer.getRemaining() <= (puzzleInfo[5] * 10)) {//show darkness with a little flower bit
       setColor(OFF);
       setColorOnFace(dim(GREEN, 100), centerFace);
     } else {//show the first stage of the puzzle
-      setColor(startColors[stageTwoData]);//setColor(pinkColors[stageTwoData]);
     }
   }
 
